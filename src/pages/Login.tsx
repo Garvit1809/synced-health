@@ -2,6 +2,8 @@ import { useState } from "react";
 import LoginImg from "../assets/hero_healthcare.png";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { signInWithEmailAndPassword } from "firebase/auth";
+import { auth } from "./firebase";
 
 const Login = () => {
   const [email, setEmail] = useState<string>("");
@@ -9,26 +11,33 @@ const Login = () => {
 
   const navigate = useNavigate();
 
-  // Function to handle form submission
-  const handleLogin = (event: React.FormEvent) => {
+  const handleLogin = async (event: React.FormEvent) => {
     event.preventDefault();
     console.log("Email:", email);
     console.log("Password:", password);
-    // Implement your authentication logic here
-    navigate("/");
+    signInWithEmailAndPassword(auth, email, password)
+      .then((userCredential) => {
+        // Signed in
+        const user = userCredential.user;
+        navigate("/");
+        console.log(user);
+      })
+      .catch((error) => {
+        const errorCode = error.code;
+        const errorMessage = error.message;
+        console.log(errorCode, errorMessage);
+      });
   };
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100 px-4">
-      <div className="bg-white shadow-md rounded-lg px-8 pt-6 pb-8 mb-4">
+    <div className="min-h-screen flex flex-col items-center justify-center bg-gray-100">
+      <div className="bg-white h-screen w-full px-8 pt-6 pb-8">
         <div className="flex justify-center">
-          {/* Icon at the top of the page */}
           <div className="rounded-full p-2 mb-4">
             <img src={LoginImg} alt="Icon" />
           </div>
         </div>
         <div className="flex justify-center mb-6">
-          {/* Illustration */}
           <h2 className="text-2xl font-bold">Login</h2>
         </div>
         <form onSubmit={handleLogin}>
