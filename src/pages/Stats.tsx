@@ -2,6 +2,7 @@ import { onValue, ref } from "firebase/database";
 import { useEffect, useState } from "react";
 import db from "./firebase";
 import Stat from "./Stat";
+import { toast } from "@/components/ui/use-toast";
 
 type SensorData = {
   // Sensor1 properties
@@ -52,6 +53,33 @@ const Stats = () => {
           spo2: data.spo2 || 0,
         },
       }));
+      if (data.Body_Temp < 97) {
+        toast({
+          variant: "destructive",
+          title: "Abnormal Body Temp",
+          description: "Body Temp below 97 °F!!",
+        });
+        if (data.spo2 < 95) {
+          toast({
+            variant: "destructive",
+            title: "Abnormal Oxygen level",
+            description: "Oxygen level below 95%!!",
+          });
+        }
+      } else if (data.Body_Temp > 99) {
+        toast({
+          variant: "destructive",
+          title: "Abnormal Body Temp",
+          description: "Body Temp above 99 °F!!",
+        });
+        if (data.spo2 < 95) {
+          toast({
+            variant: "destructive",
+            title: "Abnormal Oxygen level",
+            description: "Oxygen level below 95%!!",
+          });
+        }
+      }
     });
 
     // Listen for changes on Sensor2
